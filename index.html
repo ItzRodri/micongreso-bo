@@ -660,9 +660,6 @@ const InscriptionPage = {
     handleFileUpload(event) {
       this.receipt = event.target.files[0];
     },
-    handleFileUpload(event) {
-      this.receipt = event.target.files[0];
-    },
     
     async submitInscription() {
       if (!this.receipt) {
@@ -697,6 +694,7 @@ const InscriptionPage = {
             carrera: this.career,
             comentarios: this.comments,
             encargado: this.managerCode+1,
+            comprobante: uploadedFileId
         
           }
         };
