@@ -169,6 +169,58 @@
           margin-bottom: 0.5rem;
         }
       }
+      .payment-method-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+  display: flex;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-option {
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.payment-radio {  
+  margin-right: 10px;
+}
+
+.payment-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.payment-label:hover {
+  color: #007bff;
+}
+
+.bank-info,
+.qr-info {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bank-info p,
+.qr-info p {
+  font-size: 14px;
+  color: #555;
+}
+
+.qr-code {
+  display: block;
+  margin: 0 auto;
+  width: 200px;
+  height: 200px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+}
     </style>
     </head>
     <body>
@@ -225,22 +277,26 @@ const InscriptionPage = {
   </option>
         </select>
         <h3>Método de pago</h3>
-        <div>
-          <input type="radio" id="bank" value="bank" v-model="paymentMethod">
-          <label for="bank">Depósito bancario</label>
-        </div>
-        <div>
-          <input type="radio" id="qr" value="qr" v-model="paymentMethod">
-          <label for="qr">Pago mediante QR</label>
-        </div>
-        <div v-if="paymentMethod === 'bank'">
-          <p><strong>Datos bancarios:</strong></p>
-          <p>Banco: Banco Bisa</p>
-          <p>Número de cuenta caja de ahorro: 7214504019</p>
-        </div>
-        <div v-if="paymentMethod === 'qr'">
-          <img src="qr-code.png" alt="Código QR para pago" width="200" height="200">
-        </div>
+       <div class="payment-method-container">
+  <div class="payment-option">
+    <input type="radio" id="bank" value="bank" v-model="paymentMethod" class="payment-radio">
+    <label for="bank" class="payment-label">Depósito bancario</label>
+  </div>
+  <div class="payment-option">
+    <input type="radio" id="qr" value="qr" v-model="paymentMethod" class="payment-radio">
+    <label for="qr" class="payment-label">Pago mediante QR</label>
+  </div>
+
+  <div v-if="paymentMethod === 'bank'" class="bank-info">
+    <p><strong>Datos bancarios:</strong></p>
+    <p>Banco: Banco Bisa</p>
+    <p>Número de cuenta caja de ahorro: 7214504019</p>
+  </div>
+
+  <div v-if="paymentMethod === 'qr'" class="qr-info">
+    <img src="qr-code.png" alt="Código QR para pago" class="qr-code">
+  </div>
+</div>
         <input type="file" @change="handleFileUpload" accept=".pdf,.jpg,.png" required>
         <button type="submit">Enviar Inscripción</button>
       </form>
