@@ -1,4 +1,4 @@
-<html><head><base href="https://cnu-sc-perla-del-oriente.edu.bo/">
+<html><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CNU SC Perla del Oriente</title>
@@ -216,8 +216,8 @@
 .qr-code {
   display: block;
   margin: 0 auto;
-  width: 200px;
-  height: 200px;
+  width: 500px;
+  height: 500px;
   border: 2px solid #ddd;
   border-radius: 8px;
 }
@@ -294,7 +294,7 @@ const InscriptionPage = {
   </div>
 
   <div v-if="paymentMethod === 'qr'" class="qr-info">
-    <img src="qr-code.png" alt="Código QR para pago" class="qr-code">
+    <img src="assets/qr.jpg" class="qr-code">
   </div>
 </div>
         <input type="file" @change="handleFileUpload" accept=".pdf,.jpg,.png" required>
