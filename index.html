@@ -1,282 +1,39 @@
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CNU SC Perla del Oriente</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --primary-color: #920000;
-        --secondary-color: #ffffff;
-        --accent-color: #a80000;
-        --text-color: #333333;
-        --background-color: #f5f5f5;
-      }
+<!DOCTYPE html>
+<html lang="en">
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CNU SC Perla del Oriente</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
-      body {
-        font-family: "Roboto", sans-serif;
-        background-color: var(--background-color);
-        color: var(--text-color);
-        line-height: 1.6;
-      }
+<body>
+  <div id="app">
+    <header>
+      <nav>
+        <a href="#inscription" @click="changePage('inscription')"
+          :class="{ active: currentPage === 'inscription' }">Inscripción</a>
+        <a href="admin.html" @click="changePage('admin')" :class="{ active: currentPage === 'admin' }">Administradores</a>
+        <a href="postulacion.html" @click="changePage('speakers')" :class="{ active: currentPage === 'speakers' }">Postulación
+          de Disertantes</a>
+        <a href="cronograma.html" @click="changePage('schedule')"
+          :class="{ active: currentPage === 'schedule' }">Cronograma</a>
+        <a href="disertantes.html" @click="changePage('confirmed-speakers')"
+          :class="{ active: currentPage === 'confirmed-speakers' }">Disertantes Confirmados</a>
+      </nav>
+    </header>
+    <main class="container">
+      <component :is="currentPageComponent"></component>
+    </main>
+  </div>
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-
-      header {
-        background-color: var(--primary-color);
-        color: var(--secondary-color);
-        padding: 1rem 0;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      nav {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        padding: 0.5rem 0;
-      }
-
-      nav a {
-        color: var(--secondary-color);
-        text-decoration: none;
-        font-weight: bold;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        transition: background-color 0.3s ease;
-      }
-
-      nav a:hover,
-      nav a.active {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-
-      h1,
-      h2,
-      h3 {
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-      }
-
-      form {
-        background-color: var(--secondary-color);
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        padding: 0.8rem;
-        margin-bottom: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-      }
-
-      button {
-        background-color: var(--accent-color);
-        color: var(--secondary-color);
-        border: none;
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      button:hover {
-        background-color: #008647;
-      }
-
-      .card {
-        background-color: var(--secondary-color);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-      }
-
-      .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-
-      .modal-content {
-        background-color: var(--secondary-color);
-        padding: 2rem;
-        border-radius: 8px;
-        max-width: 500px;
-        width: 90%;
-      }
-
-      .close {
-        float: right;
-        font-size: 1.5rem;
-        font-weight: bold;
-        cursor: pointer;
-      }
-
-      .loading-bar {
-        width: 100%;
-        height: 20px;
-        background-color: #e0e0e0;
-        border-radius: 10px;
-        overflow: hidden;
-      }
-
-      .loading-progress {
-        width: 0;
-        height: 100%;
-        background-color: var(--accent-color);
-        transition: width 0.5s ease;
-      }
-
-      @media (max-width: 768px) {
-        nav {
-          flex-direction: column;
-        }
-
-        nav a {
-          width: 100%;
-          text-align: center;
-          margin-bottom: 0.5rem;
-        }
-      }
-      .payment-method-container {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-        background-color: #f9f9f9;
-        display: flex;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .payment-option {
-        align-items: center;
-        margin-bottom: 15px;
-      }
-
-      .payment-radio {
-        margin-right: 10px;
-      }
-
-      .payment-label {
-        font-size: 16px;
-        font-weight: 600;
-        color: #333;
-        cursor: pointer;
-      }
-
-      .payment-label:hover {
-        color: #007bff;
-      }
-
-      .bank-info,
-      .qr-info {
-        background-color: #fff;
-        padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .bank-info p,
-      .qr-info p {
-        font-size: 14px;
-        color: #555;
-      }
-
-      .qr-code {
-        display: block;
-        margin: 0 auto;
-        width: 500px;
-        height: 500px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="app">
-      <header>
-        <nav>
-          <a
-            href="#inscription"
-            @click="changePage('inscription')"
-            :class="{ active: currentPage === 'inscription' }"
-            >Inscripción</a
-          >
-          <a
-            href="#admin"
-            @click="changePage('admin')"
-            :class="{ active: currentPage === 'admin' }"
-            >Administradores</a
-          >
-          <a
-            href="#speakers"
-            @click="changePage('speakers')"
-            :class="{ active: currentPage === 'speakers' }"
-            >Postulación de Disertantes</a
-          >
-          <a
-            href="#schedule"
-            @click="changePage('schedule')"
-            :class="{ active: currentPage === 'schedule' }"
-            >Cronograma</a
-          >
-          <a
-            href="#confirmed-speakers"
-            @click="changePage('confirmed-speakers')"
-            :class="{ active: currentPage === 'confirmed-speakers' }"
-            >Disertantes Confirmados</a
-          >
-        </nav>
-      </header>
-
-      <main class="container">
-        <component :is="currentPageComponent"></component>
-      </main>
-    </div>
-
-    <script>
-      const InscriptionPage = {
-        template: `
+  <script>
+    const InscriptionPage = {
+      template: `
     <div>
       <h1>Inscripción al Congreso Nacional de Universidades</h1>
       <div class="card">
@@ -336,874 +93,524 @@
       </form>
     </div>
   `,
-        data() {
-          return {
-            name: "",
-            email: "",
-            university: "",
-            career: "",
-            semester: "",
-            comments: "",
-            managerCode: "",
-            paymentMethod: "",
-            universitiesData: [
-              {
-                nombre: "Universidad Autónoma Gabriel René Moreno (UAGRM)",
-                carreras: [
-                  "Ingeniería Civil",
-                  "Ingeniería Industrial",
-                  "Ingeniería Química",
-                  "Ingeniería Eléctrica",
-                  "Ingeniería Electrónica",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Mecánica",
-                  "Ingeniería Petrolera",
-                  "Ingeniería Ambiental",
-                  "Arquitectura",
-                  "Ingeniería en Telecomunicaciones",
-                  "Economía",
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Ingeniería Comercial",
-                  "Ingeniería Financiera",
-                  "Ingeniería en Marketing y Logística",
-                  "Comercio Internacional",
-                  "Derecho",
-                  "Ciencias Políticas",
-                  "Relaciones Internacionales",
-                  "Trabajo Social",
-                  "Psicología",
-                  "Comunicación Social",
-                  "Sociología",
-                  "Turismo",
-                  "Filosofía",
-                  "Idiomas",
-                  "Educación",
-                  "Medicina",
-                  "Odontología",
-                  "Bioquímica",
-                  "Farmacia",
-                  "Enfermería",
-                  "Nutrición y Dietética",
-                  "Tecnología Médica",
-                  "Fisioterapia y Kinesiología",
-                  "Ingeniería Agronómica",
-                  "Ingeniería Forestal",
-                  "Ingeniería en Recursos Naturales Renovables",
-                  "Ingeniería en Agronegocios",
-                  "Medicina Veterinaria y Zootecnia",
-                  "Análisis de Sistemas",
-                  "Construcciones Civiles",
-                  "Electricidad Industrial",
-                  "Electrónica Industrial",
-                  "Mecánica Industrial",
-                  "Ingeniería Informática",
-                  "Ingeniería en Redes y Telecomunicaciones",
-                  "Diseño Gráfico",
-                  "Bibliotecología y Ciencias de la Información",
-                  "Bioquímica y Farmacia",
-                ],
-              },
-              {
-                nombre: "Universidad Privada de Santa Cruz de la Sierra (UPSA)",
-                carreras: [
-                  "Ingeniería Civil",
-                  "Ingeniería Industrial y de Sistemas",
-                  "Ingeniería Electrónica",
-                  "Ingeniería de Sistemas",
-                  "Arquitectura",
-                  "Ingeniería Comercial",
-                  "Ingeniería Financiera",
-                  "Administración de Empresas",
-                  "Economía",
-                  "Marketing y Publicidad",
-                  "Negocios Internacionales",
-                  "Contaduría Pública",
-                  "Psicología",
-                  "Diseño Gráfico",
-                  "Comunicación Estratégica y Corporativa",
-                  "Diseño y Gestión de la Moda",
-                  "Ingeniería en Logística y Transporte",
-                ],
-              },
-              {
-                nombre:
-                  'Universidad Católica Boliviana "San Pablo" - Sede Santa Cruz (UCB)',
-                carreras: [
-                  "Administración de Empresas",
-                  "Arquitectura",
-                  "Comunicación Social",
-                  "Contaduría Pública",
-                  "Derecho",
-                  "Economía",
-                  "Enfermería",
-                  "Ingeniería Ambiental",
-                  "Ingeniería Civil",
-                  "Ingeniería Comercial",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Industrial",
-                  "Ingeniería Mecatrónica",
-                  "Psicología",
-                  "Fisioterapia y Kinesiología",
-                ],
-              },
-              {
-                nombre: "Universidad NUR",
-                carreras: [
-                  "Administración de Empresas",
-                  "Ingeniería Comercial",
-                  "Marketing y Publicidad",
-                  "Negocios Internacionales",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería en Redes y Telecomunicaciones",
-                  "Diseño Gráfico",
-                  "Comunicación Social",
-                  "Psicología",
-                  "Derecho",
-                  "Gastronomía y Hotelería",
-                ],
-              },
-              {
-                nombre: "Universidad de Aquino Bolivia (UDABOL)",
-                carreras: [
-                  "Medicina",
-                  "Odontología",
-                  "Bioquímica y Farmacia",
-                  "Veterinaria y Zootecnia",
-                  "Enfermería",
-                  "Fisioterapia y Kinesiología",
-                  "Psicología",
-                  "Derecho",
-                  "Ingeniería Comercial",
-                  "Ingeniería Financiera",
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Industrial",
-                  "Ingeniería Petrolera y Gas Natural",
-                  "Ingeniería Ambiental",
-                  "Comunicación Social",
-                ],
-              },
-              {
-                nombre: "Universidad Privada Domingo Savio (UPDS)",
-                carreras: [
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Ingeniería Comercial",
-                  "Marketing y Publicidad",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería en Redes y Telecomunicaciones",
-                  "Diseño Gráfico y Producción Crossmedia",
-                  "Psicología",
-                  "Derecho",
-                  "Comunicación Social",
-                  "Ingeniería Industrial",
-                  "Ingeniería Petrolera",
-                  "Gastronomía y Hotelería",
-                ],
-              },
-              {
-                nombre:
-                  "Universidad Tecnológica Privada de Santa Cruz (UTEPSA)",
-                carreras: [
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Ingeniería Comercial",
-                  "Ingeniería Financiera",
-                  "Ingeniería Industrial",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Petrolera y Gas Natural",
-                  "Ingeniería Ambiental",
-                  "Marketing y Logística",
-                  "Comercio Internacional",
-                  "Diseño Gráfico",
-                  "Psicología",
-                  "Derecho",
-                  "Comunicación Social",
-                  "Arquitectura",
-                ],
-              },
-              {
-                nombre: "Universidad Privada Franz Tamayo (UNIFRANZ)",
-                carreras: [
-                  "Medicina",
-                  "Odontología",
-                  "Veterinaria y Zootecnia",
-                  "Psicología",
-                  "Administración de Empresas",
-                  "Ingeniería Comercial",
-                  "Ingeniería Financiera",
-                  "Marketing y Publicidad",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Económica y Financiera",
-                  "Diseño Gráfico y Producción Crossmedia",
-                  "Comunicación Social",
-                  "Derecho",
-                  "Turismo y Hotelería",
-                  "Gastronomía y Gestión de Restaurantes",
-                  "Fisioterapia y Kinesiología",
-                ],
-              },
-              {
-                nombre: "Universidad para el Desarrollo y la Innovación (UDI)",
-                carreras: [
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Comercial",
-                  "Ingeniería Industrial",
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Psicología",
-                  "Derecho",
-                  "Comunicación Social",
-                  "Diseño Gráfico",
-                  "Marketing y Publicidad",
-                  "Gastronomía y Hotelería",
-                ],
-              },
-              {
-                nombre: "Universidad Privada Cumbre",
-                carreras: [
-                  "Medicina",
-                  "Odontología",
-                  "Bioquímica y Farmacia",
-                  "Enfermería",
-                  "Fisioterapia y Kinesiología",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Comercial",
-                  "Administración de Empresas",
-                  "Psicología",
-                  "Derecho",
-                  "Arquitectura",
-                ],
-              },
-              {
-                nombre: "Universidad Evangélica Boliviana (UEB)",
-                carreras: [
-                  "Medicina",
-                  "Enfermería",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Comercial",
-                  "Administración de Empresas",
-                  "Psicología",
-                  "Teología",
-                  "Trabajo Social",
-                  "Comunicación Social",
-                  "Derecho",
-                ],
-              },
-              {
-                nombre: "Universidad Cristiana de Bolivia (UCEBOL)",
-                carreras: [
-                  "Medicina",
-                  "Odontología",
-                  "Bioquímica y Farmacia",
-                  "Veterinaria y Zootecnia",
-                  "Enfermería",
-                  "Fisioterapia y Kinesiología",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Comercial",
-                  "Administración de Empresas",
-                  "Psicología",
-                  "Derecho",
-                  "Arquitectura",
-                  "Diseño Gráfico",
-                  "Comunicación Social",
-                ],
-              },
-              {
-                nombre: "Universidad Privada Boliviana (UPB) - Sede Santa Cruz",
-                carreras: [
-                  "Ingeniería Comercial",
-                  "Administración de Empresas",
-                  "Ingeniería de Sistemas Computacionales",
-                  "Ingeniería Industrial y de Sistemas",
-                  "Ingeniería Petrolera y Gas Natural",
-                  "Ingeniería de Energías",
-                  "Economía",
-                  "Marketing y Logística",
-                  "Comunicación y Medios Digitales",
-                  "Diseño Gráfico",
-                ],
-              },
-              {
-                nombre: "Universidad Nacional Ecológica (UNE)",
-                carreras: [
-                  "Ingeniería Ambiental",
-                  "Ingeniería en Energías Renovables",
-                  "Ingeniería Forestal",
-                  "Ingeniería en Agronegocios",
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Psicología",
-                  "Derecho",
-                  "Turismo Ecológico",
-                  "Medicina Veterinaria y Zootecnia",
-                ],
-              },
-              {
-                nombre: "Universidad Técnica Privada Cosmos (UNITEPC)",
-                carreras: [
-                  "Medicina",
-                  "Odontología",
-                  "Enfermería",
-                  "Ingeniería Comercial",
-                  "Ingeniería de Sistemas",
-                  "Administración de Empresas",
-                  "Arquitectura",
-                  "Derecho",
-                  "Psicología",
-                  "Diseño Gráfico",
-                ],
-              },
-              {
-                nombre: "Escuela Militar de Ingeniería (EMI)",
-                carreras: [
-                  "Ingeniería Civil",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Electrónica",
-                  "Ingeniería Industrial",
-                  "Ingeniería Mecatrónica",
-                  "Ingeniería Petrolera y Gas Natural",
-                  "Ingeniería Ambiental",
-                  "Ingeniería en Telecomunicaciones",
-                  "Ingeniería en Ciencias de la Computación",
-                ],
-              },
-              {
-                nombre: "Universidad Nacional del Oriente (UNO)",
-                carreras: [
-                  "Medicina",
-                  "Odontología",
-                  "Bioquímica y Farmacia",
-                  "Enfermería",
-                  "Fisioterapia y Kinesiología",
-                  "Psicología",
-                  "Derecho",
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Ingeniería Comercial",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Industrial",
-                  "Ingeniería Petrolera y Gas Natural",
-                  "Arquitectura",
-                  "Diseño Gráfico",
-                ],
-              },
-              {
-                nombre: "Universidad Central (UNICEN)",
-                carreras: [
-                  "Medicina",
-                  "Odontología",
-                  "Enfermería",
-                  "Fisioterapia y Kinesiología",
-                  "Bioquímica y Farmacia",
-                  "Psicología",
-                  "Derecho",
-                  "Administración de Empresas",
-                  "Contaduría Pública",
-                  "Ingeniería Comercial",
-                  "Ingeniería de Sistemas",
-                  "Ingeniería Industrial",
-                  "Ingeniería Civil",
-                  "Arquitectura",
-                  "Comunicación Social",
-                  "Diseño Gráfico",
-                  "Turismo y Hotelería",
-                ],
-              },
-              // Agrega aquí el resto de las universidades y carreras de tu JSON
-            ],
-            semesters: [
-              "1er Semestre",
-              "2do Semestre",
-              "3er Semestre",
-              "4to Semestre",
-              "5to Semestre",
-            ],
-            managerCodes: [],
-            receipt: null,
-            loadingProgress: 0,
-            loadingMessage: "Cargando...",
-          };
-        },
-        computed: {
-          filteredCareers() {
-            const selectedUniversity = this.universitiesData.find(
-              (uni) => uni.nombre === this.university
-            );
-            return selectedUniversity ? selectedUniversity.carreras : [];
-          },
-        },
-        watch: {
-          university(newVal, oldVal) {
-            if (newVal !== oldVal) {
-              this.career = "";
-            }
-          },
-        },
-        mounted() {
-          this.simulateLoading();
-          this.fetchManagerCodes();
-        },
-        methods: {
-          async fetchManagerCodes() {
-            try {
-              const response = await axios.get(
-                "https://rodri.crowdtech.dev/api/encargados"
-              );
-              // Extraer los códigos desde la respuesta
-              this.managerCodes = response.data.data.map(
-                (item) => item.attributes.codigo
-              );
-            } catch (error) {
-              console.error(
-                "Error al cargar los códigos de los encargados:",
-                error
-              );
-              // Manejar el error (opcional)
-            }
-          },
-          handleFileUpload(event) {
-            this.receipt = event.target.files[0];
-          },
-
-          async submitInscription() {
-            if (!this.receipt) {
-              alert("Por favor, sube un archivo de comprobante.");
-              return;
-            }
-
-            try {
-              // Subir el archivo al servidor
-              const formData = new FormData();
-              formData.append("files", this.receipt);
-
-              const uploadResponse = await axios.post(
-                "https://rodri.crowdtech.dev/api/upload",
-                formData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                }
-              );
-
-              const uploadedFileId = uploadResponse.data[0].id;
-
-              // Enviar los datos del estudiante
-              const studentData = {
-                data: {
-                  nombre: this.name,
-                  correo: this.email,
-                  universidad: this.university,
-                  carrera: this.career,
-                  comentarios: this.comments,
-                  encargado: this.managerCode + 1,
-                  comprobante: uploadedFileId,
-                },
-              };
-              console.log(studentData);
-
-              const response = await axios.post(
-                "https://rodri.crowdtech.dev/api/estudiantes",
-                studentData
-              );
-
-              alert("Inscripción enviada con éxito.");
-              this.clearForm();
-            } catch (error) {
-              console.error("Error al enviar la inscripción:", error);
-              alert("Hubo un error al enviar la inscripción.");
-            }
-          },
-          clearForm() {
-            this.name = "";
-            this.email = "";
-            this.university = "";
-            this.career = "";
-            this.comments = "";
-            this.managerCode = "";
-            this.receipt = null;
-          },
-          simulateLoading() {
-            const interval = setInterval(() => {
-              this.loadingProgress += 10;
-              if (this.loadingProgress >= 100) {
-                clearInterval(interval);
-                this.loadingMessage = "¡Listo para inscribirte!";
-              }
-            }, 500);
-          },
-        },
-      };
-
-      const AdminPage = {
-        template: `
-            <div>
-              <div v-if="!isLoggedIn">
-                <h2>Iniciar Sesión</h2>
-                <form @submit.prevent="login">
-                  <input v-model="username" type="text" placeholder="Usuario" required>
-                  <input v-model="password" type="password" placeholder="Contraseña" required>
-                  <button type="submit">Iniciar Sesión</button>
-                </form>
-              </div>
-              <div v-else>
-                <h2>Panel de Administración</h2>
-                <div class="card">
-                  <h3>Estadísticas de Inscripción</h3>
-                  <p>Total de inscritos: {{ totalInscriptions }}</p>
-                  <canvas id="inscriptionChart"></canvas>
-                </div>
-                <div class="card">
-                  <h3>Gestión de QR</h3>
-                  <button @click="changeQR">Cambiar QR de pagos</button>
-                </div>
-                <div class="card">
-                  <h3>Exportar Datos</h3>
-                  <button @click="exportToExcel">Exportar a Excel</button>
-                </div>
-                <div class="card">
-                  <h3>Gestión de Cronograma</h3>
-                  <button @click="editSchedule">Editar Cronograma</button>
-                </div>
-                <div class="card">
-                  <h3>Gestión de Disertantes</h3>
-                  <button @click="manageSpeakers">Gestionar Disertantes</button>
-                </div>
-              </div>
-            </div>
-          `,
-        data() {
-          return {
-            isLoggedIn: false,
-            username: "",
-            password: "",
-            totalInscriptions: 250,
-            inscriptionsByManager: {
-              ger1: 50,
-              ana2: 45,
-              sar3: 40,
-              jar4: 35,
-              ben5: 30,
-              sam6: 50,
+      data() {
+        return {
+          name: "",
+          email: "",
+          university: "",
+          career: "",
+          semester: "",
+          comments: "",
+          managerCode: "",
+          paymentMethod: "",
+          universitiesData: [
+            {
+              nombre: "Universidad Autónoma Gabriel René Moreno (UAGRM)",
+              carreras: [
+                "Ingeniería Civil",
+                "Ingeniería Industrial",
+                "Ingeniería Química",
+                "Ingeniería Eléctrica",
+                "Ingeniería Electrónica",
+                "Ingeniería de Sistemas",
+                "Ingeniería Mecánica",
+                "Ingeniería Petrolera",
+                "Ingeniería Ambiental",
+                "Arquitectura",
+                "Ingeniería en Telecomunicaciones",
+                "Economía",
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Ingeniería Comercial",
+                "Ingeniería Financiera",
+                "Ingeniería en Marketing y Logística",
+                "Comercio Internacional",
+                "Derecho",
+                "Ciencias Políticas",
+                "Relaciones Internacionales",
+                "Trabajo Social",
+                "Psicología",
+                "Comunicación Social",
+                "Sociología",
+                "Turismo",
+                "Filosofía",
+                "Idiomas",
+                "Educación",
+                "Medicina",
+                "Odontología",
+                "Bioquímica",
+                "Farmacia",
+                "Enfermería",
+                "Nutrición y Dietética",
+                "Tecnología Médica",
+                "Fisioterapia y Kinesiología",
+                "Ingeniería Agronómica",
+                "Ingeniería Forestal",
+                "Ingeniería en Recursos Naturales Renovables",
+                "Ingeniería en Agronegocios",
+                "Medicina Veterinaria y Zootecnia",
+                "Análisis de Sistemas",
+                "Construcciones Civiles",
+                "Electricidad Industrial",
+                "Electrónica Industrial",
+                "Mecánica Industrial",
+                "Ingeniería Informática",
+                "Ingeniería en Redes y Telecomunicaciones",
+                "Diseño Gráfico",
+                "Bibliotecología y Ciencias de la Información",
+                "Bioquímica y Farmacia",
+              ],
             },
-          };
+            {
+              nombre: "Universidad Privada de Santa Cruz de la Sierra (UPSA)",
+              carreras: [
+                "Ingeniería Civil",
+                "Ingeniería Industrial y de Sistemas",
+                "Ingeniería Electrónica",
+                "Ingeniería de Sistemas",
+                "Arquitectura",
+                "Ingeniería Comercial",
+                "Ingeniería Financiera",
+                "Administración de Empresas",
+                "Economía",
+                "Marketing y Publicidad",
+                "Negocios Internacionales",
+                "Contaduría Pública",
+                "Psicología",
+                "Diseño Gráfico",
+                "Comunicación Estratégica y Corporativa",
+                "Diseño y Gestión de la Moda",
+                "Ingeniería en Logística y Transporte",
+              ],
+            },
+            {
+              nombre:
+                'Universidad Católica Boliviana "San Pablo" - Sede Santa Cruz (UCB)',
+              carreras: [
+                "Administración de Empresas",
+                "Arquitectura",
+                "Comunicación Social",
+                "Contaduría Pública",
+                "Derecho",
+                "Economía",
+                "Enfermería",
+                "Ingeniería Ambiental",
+                "Ingeniería Civil",
+                "Ingeniería Comercial",
+                "Ingeniería de Sistemas",
+                "Ingeniería Industrial",
+                "Ingeniería Mecatrónica",
+                "Psicología",
+                "Fisioterapia y Kinesiología",
+              ],
+            },
+            {
+              nombre: "Universidad NUR",
+              carreras: [
+                "Administración de Empresas",
+                "Ingeniería Comercial",
+                "Marketing y Publicidad",
+                "Negocios Internacionales",
+                "Ingeniería de Sistemas",
+                "Ingeniería en Redes y Telecomunicaciones",
+                "Diseño Gráfico",
+                "Comunicación Social",
+                "Psicología",
+                "Derecho",
+                "Gastronomía y Hotelería",
+              ],
+            },
+            {
+              nombre: "Universidad de Aquino Bolivia (UDABOL)",
+              carreras: [
+                "Medicina",
+                "Odontología",
+                "Bioquímica y Farmacia",
+                "Veterinaria y Zootecnia",
+                "Enfermería",
+                "Fisioterapia y Kinesiología",
+                "Psicología",
+                "Derecho",
+                "Ingeniería Comercial",
+                "Ingeniería Financiera",
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Ingeniería de Sistemas",
+                "Ingeniería Industrial",
+                "Ingeniería Petrolera y Gas Natural",
+                "Ingeniería Ambiental",
+                "Comunicación Social",
+              ],
+            },
+            {
+              nombre: "Universidad Privada Domingo Savio (UPDS)",
+              carreras: [
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Ingeniería Comercial",
+                "Marketing y Publicidad",
+                "Ingeniería de Sistemas",
+                "Ingeniería en Redes y Telecomunicaciones",
+                "Diseño Gráfico y Producción Crossmedia",
+                "Psicología",
+                "Derecho",
+                "Comunicación Social",
+                "Ingeniería Industrial",
+                "Ingeniería Petrolera",
+                "Gastronomía y Hotelería",
+              ],
+            },
+            {
+              nombre:
+                "Universidad Tecnológica Privada de Santa Cruz (UTEPSA)",
+              carreras: [
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Ingeniería Comercial",
+                "Ingeniería Financiera",
+                "Ingeniería Industrial",
+                "Ingeniería de Sistemas",
+                "Ingeniería Petrolera y Gas Natural",
+                "Ingeniería Ambiental",
+                "Marketing y Logística",
+                "Comercio Internacional",
+                "Diseño Gráfico",
+                "Psicología",
+                "Derecho",
+                "Comunicación Social",
+                "Arquitectura",
+              ],
+            },
+            {
+              nombre: "Universidad Privada Franz Tamayo (UNIFRANZ)",
+              carreras: [
+                "Medicina",
+                "Odontología",
+                "Veterinaria y Zootecnia",
+                "Psicología",
+                "Administración de Empresas",
+                "Ingeniería Comercial",
+                "Ingeniería Financiera",
+                "Marketing y Publicidad",
+                "Ingeniería de Sistemas",
+                "Ingeniería Económica y Financiera",
+                "Diseño Gráfico y Producción Crossmedia",
+                "Comunicación Social",
+                "Derecho",
+                "Turismo y Hotelería",
+                "Gastronomía y Gestión de Restaurantes",
+                "Fisioterapia y Kinesiología",
+              ],
+            },
+            {
+              nombre: "Universidad para el Desarrollo y la Innovación (UDI)",
+              carreras: [
+                "Ingeniería de Sistemas",
+                "Ingeniería Comercial",
+                "Ingeniería Industrial",
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Psicología",
+                "Derecho",
+                "Comunicación Social",
+                "Diseño Gráfico",
+                "Marketing y Publicidad",
+                "Gastronomía y Hotelería",
+              ],
+            },
+            {
+              nombre: "Universidad Privada Cumbre",
+              carreras: [
+                "Medicina",
+                "Odontología",
+                "Bioquímica y Farmacia",
+                "Enfermería",
+                "Fisioterapia y Kinesiología",
+                "Ingeniería de Sistemas",
+                "Ingeniería Comercial",
+                "Administración de Empresas",
+                "Psicología",
+                "Derecho",
+                "Arquitectura",
+              ],
+            },
+            {
+              nombre: "Universidad Evangélica Boliviana (UEB)",
+              carreras: [
+                "Medicina",
+                "Enfermería",
+                "Ingeniería de Sistemas",
+                "Ingeniería Comercial",
+                "Administración de Empresas",
+                "Psicología",
+                "Teología",
+                "Trabajo Social",
+                "Comunicación Social",
+                "Derecho",
+              ],
+            },
+            {
+              nombre: "Universidad Cristiana de Bolivia (UCEBOL)",
+              carreras: [
+                "Medicina",
+                "Odontología",
+                "Bioquímica y Farmacia",
+                "Veterinaria y Zootecnia",
+                "Enfermería",
+                "Fisioterapia y Kinesiología",
+                "Ingeniería de Sistemas",
+                "Ingeniería Comercial",
+                "Administración de Empresas",
+                "Psicología",
+                "Derecho",
+                "Arquitectura",
+                "Diseño Gráfico",
+                "Comunicación Social",
+              ],
+            },
+            {
+              nombre: "Universidad Privada Boliviana (UPB) - Sede Santa Cruz",
+              carreras: [
+                "Ingeniería Comercial",
+                "Administración de Empresas",
+                "Ingeniería de Sistemas Computacionales",
+                "Ingeniería Industrial y de Sistemas",
+                "Ingeniería Petrolera y Gas Natural",
+                "Ingeniería de Energías",
+                "Economía",
+                "Marketing y Logística",
+                "Comunicación y Medios Digitales",
+                "Diseño Gráfico",
+              ],
+            },
+            {
+              nombre: "Universidad Nacional Ecológica (UNE)",
+              carreras: [
+                "Ingeniería Ambiental",
+                "Ingeniería en Energías Renovables",
+                "Ingeniería Forestal",
+                "Ingeniería en Agronegocios",
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Psicología",
+                "Derecho",
+                "Turismo Ecológico",
+                "Medicina Veterinaria y Zootecnia",
+              ],
+            },
+            {
+              nombre: "Universidad Técnica Privada Cosmos (UNITEPC)",
+              carreras: [
+                "Medicina",
+                "Odontología",
+                "Enfermería",
+                "Ingeniería Comercial",
+                "Ingeniería de Sistemas",
+                "Administración de Empresas",
+                "Arquitectura",
+                "Derecho",
+                "Psicología",
+                "Diseño Gráfico",
+              ],
+            },
+            {
+              nombre: "Escuela Militar de Ingeniería (EMI)",
+              carreras: [
+                "Ingeniería Civil",
+                "Ingeniería de Sistemas",
+                "Ingeniería Electrónica",
+                "Ingeniería Industrial",
+                "Ingeniería Mecatrónica",
+                "Ingeniería Petrolera y Gas Natural",
+                "Ingeniería Ambiental",
+                "Ingeniería en Telecomunicaciones",
+                "Ingeniería en Ciencias de la Computación",
+              ],
+            },
+            {
+              nombre: "Universidad Nacional del Oriente (UNO)",
+              carreras: [
+                "Medicina",
+                "Odontología",
+                "Bioquímica y Farmacia",
+                "Enfermería",
+                "Fisioterapia y Kinesiología",
+                "Psicología",
+                "Derecho",
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Ingeniería Comercial",
+                "Ingeniería de Sistemas",
+                "Ingeniería Industrial",
+                "Ingeniería Petrolera y Gas Natural",
+                "Arquitectura",
+                "Diseño Gráfico",
+              ],
+            },
+            {
+              nombre: "Universidad Central (UNICEN)",
+              carreras: [
+                "Medicina",
+                "Odontología",
+                "Enfermería",
+                "Fisioterapia y Kinesiología",
+                "Bioquímica y Farmacia",
+                "Psicología",
+                "Derecho",
+                "Administración de Empresas",
+                "Contaduría Pública",
+                "Ingeniería Comercial",
+                "Ingeniería de Sistemas",
+                "Ingeniería Industrial",
+                "Ingeniería Civil",
+                "Arquitectura",
+                "Comunicación Social",
+                "Diseño Gráfico",
+                "Turismo y Hotelería",
+              ],
+            },
+            // Agrega aquí el resto de las universidades y carreras de tu JSON
+          ],
+          semesters: [
+            "1er Semestre",
+            "2do Semestre",
+            "3er Semestre",
+            "4to Semestre",
+            "5to Semestre",
+          ],
+          managerCodes: [],
+          receipt: null,
+          loadingProgress: 0,
+          loadingMessage: "Cargando...",
+        };
+      },
+      computed: {
+        filteredCareers() {
+          const selectedUniversity = this.universitiesData.find(
+            (uni) => uni.nombre === this.university
+          );
+          return selectedUniversity ? selectedUniversity.carreras : [];
         },
-        methods: {
-          login() {
-            if (
-              (this.username === "Kensoh" || this.username === "kensoh") &&
-              this.password === "Krsh2001"
-            ) {
-              this.isLoggedIn = true;
-              this.$nextTick(() => {
-                this.renderChart();
-              });
-            } else {
-              alert("Credenciales incorrectas");
-            }
-          },
-          renderChart() {
-            const ctx = document
-              .getElementById("inscriptionChart")
-              .getContext("2d");
-            new Chart(ctx, {
-              type: "bar",
-              data: {
-                labels: Object.keys(this.inscriptionsByManager),
-                datasets: [
-                  {
-                    label: "Inscripciones por Encargado",
-                    data: Object.values(this.inscriptionsByManager),
-                    backgroundColor: "rgba(0, 168, 89, 0.6)",
-                    borderColor: "rgba(0, 168, 89, 1)",
-                    borderWidth: 1,
-                  },
-                ],
-              },
-              options: {
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              },
-            });
-          },
-          changeQR() {
-            alert("Funcionalidad para cambiar QR");
-          },
-          exportToExcel() {
-            alert("Exportando datos a Excel...");
-          },
-          editSchedule() {
-            alert("Abriendo editor de cronograma...");
-          },
-          manageSpeakers() {
-            alert("Abriendo gestión de disertantes...");
-          },
+      },
+      watch: {
+        university(newVal, oldVal) {
+          if (newVal !== oldVal) {
+            this.career = "";
+          }
         },
-      };
-
-      const SpeakersPage = {
-        template: `
-            <div>
-              <h1>Convocatoria Abierta para el Tour Universidades y Congreso Nacional de Universidades "Santa Cruz, Paraíso del Oriente"</h1>
-              <div class="card">
-                <h2>Detalles del Evento</h2>
-                <p><strong>Fechas:</strong> 10, 11 y 12 de abril de 2025</p>
-                <p><strong>Lugar:</strong> Universidad Autónoma Juan Misael Saracho (UAJMS)</p>
-                <p><strong>Objetivo:</strong> Fomentar el intercambio de conocimientos y experiencias en diversas áreas académicas.</p>
-              </div>
-              <div class="card">
-                <h2>Modalidades de Participación</h2>
-                <ul>
-                  <li>Disertaciones</li>
-                  <li>Talleres</li>
-                  <li>Actividades especiales</li>
-                </ul>
-              </div>
-              <div class="card">
-                <h2>Procedimiento de Inscripción y Selección</h2>
-                <p><strong>Fecha límite:</strong> 28 de febrero de 2025</p>
-                <p><strong>Formato de presentación:</strong> Resumen de la propuesta (máximo 500 palabras) Subir su Documento en formato PDF</p>
-                <p><strong>Evaluación:</strong> Por comité académico</p>
-                <p><strong>Comunicación de resultados:</strong> Del 12 de febrero al 25 de febrero</p>
-              </div>
-              <div class="card">
-                <h2>Beneficios para los Participantes</h2>
-                <ul>
-                  <li>Certificado de participación</li>
-                  <li>Reconocimiento académico</li>
-                  <li>Oportunidad de publicación en Foros Universitarios</li>
-                </ul>
-              </div>
-              <form @submit.prevent="submitProposal">
-                <h2>Formulario de Postulación</h2>
-                <input v-model="name" type="text" placeholder="Nombre completo" required>
-                <input v-model="email" type="email" placeholder="Correo electrónico" required>
-                <select v-model="university" required>
-                  <option value="">Selecciona tu universidad</option>
-                  <option v-for="uni in universities" :value="uni">{{ uni }}</option>
-                </select>
-                <input v-model="proposalTitle" type="text" placeholder="Título de la propuesta" required>
-                <textarea v-model="proposalDescription" placeholder="Descripción de la propuesta (máximo 500 palabras)" required maxlength="500"></textarea>
-                <input type="file" @change="handleCVUpload" accept=".pdf" placeholder="Adjuntar CV (opcional)">
-                <button type="submit">Enviar Propuesta</button>
-              </form>
-            </div>
-          `,
-        data() {
-          return {
-            name: "",
-            email: "",
-            university: "",
-            proposalTitle: "",
-            proposalDescription: "",
-            cv: null,
-            universities: ["UAGRM", "UEB", "NUR", "Otra"],
-          };
-        },
-        methods: {
-          handleCVUpload(event) {
-            this.cv = event.target.files[0];
-          },
-          submitProposal() {
-            console.log("Propuesta enviada:", this.$data);
-            alert(
-              "Propuesta enviada con éxito. Se te notificará el resultado el 15 de agosto de 2024."
+      },
+      mounted() {
+        this.simulateLoading();
+        this.fetchManagerCodes();
+      },
+      methods: {
+        async fetchManagerCodes() {
+          try {
+            const response = await axios.get(
+              "https://rodri.crowdtech.dev/api/encargados"
             );
-            Object.keys(this.$data).forEach((key) => {
-              if (typeof this.$data[key] !== "object") this.$data[key] = "";
-            });
-            this.cv = null;
-          },
+            // Extraer los códigos desde la respuesta
+            this.managerCodes = response.data.data.map(
+              (item) => item.attributes.codigo
+            );
+          } catch (error) {
+            console.error(
+              "Error al cargar los códigos de los encargados:",
+              error
+            );
+            // Manejar el error (opcional)
+          }
         },
-      };
+        handleFileUpload(event) {
+          this.receipt = event.target.files[0];
+        },
 
-      const SchedulePage = {
-        template: `
-            <div>
-              <h1>Cronograma del Evento</h1>
-              <div v-for="day in schedule" :key="day.date" class="card">
-                <h2>{{ day.date }}</h2>
-                <div v-for="event in day.events" :key="event.id" class="event">
-                  <p><strong>{{ event.time }}:</strong> {{ event.title }}</p>
-                  <p>{{ event.description }}</p>
-                </div>
-              </div>
-            </div>
-          `,
-        data() {
-          return {
-            schedule: [
-              {
-                date: "19 de septiembre de 2024",
-                events: [
-                  {
-                    id: 1,
-                    time: "09:00 - 10:00",
-                    title: "Inauguración",
-                    description: "Ceremonia de apertura del congreso",
-                  },
-                  {
-                    id: 2,
-                    time: "10:30 - 12:00",
-                    title: "Conferencia Magistral",
-                    description:
-                      "Tema: El futuro de la educación superior en Bolivia",
-                  },
-                  {
-                    id: 3,
-                    time: "14:00 - 16:00",
-                    title: "Sesiones Paralelas",
-                    description:
-                      "Presentaciones de investigaciones en diversas áreas",
-                  },
-                ],
-              },
-              {
-                date: "20 de septiembre de 2024",
-                events: [
-                  {
-                    id: 4,
-                    time: "09:00 - 11:00",
-                    title: "Talleres",
-                    description: "Talleres prácticos en diferentes disciplinas",
-                  },
-                  {
-                    id: 5,
-                    time: "11:30 - 13:00",
-                    title: "Panel de Discusión",
-                    description:
-                      "Tema: Desafíos y oportunidades para los jóvenes profesionales",
-                  },
-                  {
-                    id: 6,
-                    time: "15:00 - 17:00",
-                    title: "Networking",
-                    description:
-                      "Sesión de networking y presentación de proyectos estudiantiles",
-                  },
-                ],
-              },
-              {
-                date: "21 de septiembre de 2024",
-                events: [
-                  {
-                    id: 7,
-                    time: "09:00 - 11:00",
-                    title: "Conferencias Finales",
-                    description:
-                      "Presentaciones de los principales hallazgos del congreso",
-                  },
-                  {
-                    id: 8,
-                    time: "11:30 - 13:00",
-                    title: "Ceremonia de Clausura",
-                    description:
-                      "Entrega de reconocimientos y cierre del evento",
-                  },
-                ],
-              },
-            ],
-          };
-        },
-      };
+        async submitInscription() {
+          if (!this.receipt) {
+            alert("Por favor, sube un archivo de comprobante.");
+            return;
+          }
 
-      const ConfirmedSpeakersPage = {
-        template: `
-            <div>
-              <h1>Disertantes Confirmados</h1>
-              <div class="grid">
-                <div v-for="speaker in speakers" :key="speaker.id" class="card">
-                  <img :src="speaker.image" :alt="speaker.name" width="100" height="100">
-                  <h3>{{ speaker.name }}</h3>
-                  <p><strong>Universidad:</strong> {{ speaker.university }}</p>
-                  <p><strong>Tema:</strong> {{ speaker.topic }}</p>
-                  <button @click="showBio(speaker)">Ver Biografía</button>
-                </div>
-              </div>
-              <div v-if="selectedSpeaker" class="modal" @click="selectedSpeaker = null">
-                <div class="modal-content" @click.stop>
-                  <span class="close" @click="selectedSpeaker = null">&times;</span>
-                  <h2>{{ selectedSpeaker.name }}</h2>
-                  <p><strong>Universidad:</strong> {{ selectedSpeaker.university }}</p>
-                  <p><strong>Tema:</strong> {{ selectedSpeaker.topic }}</p>
-                  <p>{{ selectedSpeaker.bio }}</p>
-                </div>
-              </div>
-            </div>
-          `,
-        data() {
-          return {
-            speakers: [
-              {
-                id: 1,
-                name: "Dra. María López",
-                university: "UAGRM",
-                topic: "Innovación en Educación Superior",
-                image: "https://randomuser.me/api/portraits/women/1.jpg",
-                bio: "La Dra. María López es una reconocida experta en innovación educativa...",
-              },
-              {
-                id: 2,
-                name: "Dr. Carlos Rodríguez",
-                university: "UEB",
-                topic: "Sostenibilidad y Desarrollo",
-                image: "https://randomuser.me/api/portraits/men/1.jpg",
-                bio: "El Dr. Carlos Rodríguez ha dedicado su carrera a investigar soluciones sostenibles...",
-              },
-              {
-                id: 3,
-                name: "Ing. Ana Martínez",
-                university: "NUR",
-                topic: "Tecnología y Sociedad",
-                image: "https://randomuser.me/api/portraits/women/2.jpg",
-                bio: "La Ing. Ana Martínez es pionera en el estudio del impacto social de las nuevas tecnologías...",
-              },
-            ],
-            selectedSpeaker: null,
-          };
-        },
-        methods: {
-          showBio(speaker) {
-            this.selectedSpeaker = speaker;
-          },
-        },
-      };
+          try {
+            // Subir el archivo al servidor
+            const formData = new FormData();
+            formData.append("files", this.receipt);
 
-      new Vue({
-        el: "#app",
-        data: {
-          currentPage: "inscription",
+            const uploadResponse = await axios.post(
+              "https://rodri.crowdtech.dev/api/upload",
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            const uploadedFileId = uploadResponse.data[0].id;
+
+            // Enviar los datos del estudiante
+            const studentData = {
+              data: {
+                nombre: this.name,
+                correo: this.email,
+                universidad: this.university,
+                carrera: this.career,
+                comentarios: this.comments,
+                encargado: this.managerCode + 1,
+                comprobante: uploadedFileId,
+              },
+            };
+            console.log(studentData);
+
+            const response = await axios.post(
+              "https://rodri.crowdtech.dev/api/estudiantes",
+              studentData
+            );
+
+            alert("Inscripción enviada con éxito.");
+            this.clearForm();
+          } catch (error) {
+            console.error("Error al enviar la inscripción:", error);
+            alert("Hubo un error al enviar la inscripción.");
+          }
         },
-        computed: {
-          currentPageComponent() {
-            switch (this.currentPage) {
-              case "inscription":
-                return InscriptionPage;
-              case "admin":
-                return AdminPage;
-              case "speakers":
-                return SpeakersPage;
-              case "schedule":
-                return SchedulePage;
-              case "confirmed-speakers":
-                return ConfirmedSpeakersPage;
-              default:
-                return InscriptionPage;
+        clearForm() {
+          this.name = "";
+          this.email = "";
+          this.university = "";
+          this.career = "";
+          this.comments = "";
+          this.managerCode = "";
+          this.receipt = null;
+        },
+        simulateLoading() {
+          const interval = setInterval(() => {
+            this.loadingProgress += 10;
+            if (this.loadingProgress >= 100) {
+              clearInterval(interval);
+              this.loadingMessage = "¡Listo para inscribirte!";
             }
-          },
+          }, 500);
         },
-        methods: {
-          changePage(page) {
-            this.currentPage = page;
-          },
+      },
+    };
+    new Vue({
+      el: "#app",
+      data: {
+        currentPage: "inscription",
+      },
+      computed: {
+        currentPageComponent() {
+          return InscriptionPage;
         },
-      });
-    </script>
-  </body>
+      },
+      methods: {
+        changePage(page) {
+          this.currentPage = page;
+        },
+      },
+    });
+  </script>
+</body>
+
 </html>

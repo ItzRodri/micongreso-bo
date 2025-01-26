@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CNU SC Perla del Oriente</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import { AdminModule } from './script.js';
+        AdminModule.init();
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <nav>
+                <a href="index.html" @click="changePage('inscription')"
+                    :class="{ active: currentPage === 'inscription' }">Inscripción</a>
+                <a href="admin.html" @click="changePage('admin')"
+                    :class="{ active: currentPage === 'admin' }">Administradores</a>
+                <a href="postulacion.html" @click="changePage('speakers')"
+                    :class="{ active: currentPage === 'speakers' }">Postulación
+                    de Disertantes</a>
+                <a href="cronograma.html" @click="changePage('schedule')"
+                    :class="{ active: currentPage === 'schedule' }">Cronograma</a>
+                <a href="disertantes.html" @click="changePage('confirmed-speakers')"
+                    :class="{ active: currentPage === 'confirmed-speakers' }">Disertantes Confirmados</a>
+            </nav>
+        </header>
+        <main class="container">
+            <div v-if="!isLoggedIn">
+                <h2>Iniciar Sesión</h2>
+                <form @submit.prevent="login">
+                    <input v-model="username" type="text" placeholder="Usuario" required>
+                    <input v-model="password" type="password" placeholder="Contraseña" required>
+                    <button type="submit">Iniciar Sesión</button>
+                </form>
+            </div>
+            <div v-else>
+                <h2>Panel de Administración</h2>
+                <div class="card">
+                    <h3>Estadísticas de Inscripción</h3>
+                    <p>Total de inscritos: {{ totalInscriptions }}</p>
+                    <canvas id="inscriptionChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Gestión de QR</h3>
+                    <button @click="changeQR">Cambiar QR de pagos</button>
+                </div>
+                <div class="card">
+                    <h3>Exportar Datos</h3>
+                    <button @click="exportToExcel">Exportar a Excel</button>
+                </div>
+                <div class="card">
+                    <h3>Gestión de Cronograma</h3>
+                    <button @click="editSchedule">Editar Cronograma</button>
+                </div>
+                <div class="card">
+                    <h3>Gestión de Disertantes</h3>
+                    <button @click="manageSpeakers">Gestionar Disertantes</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

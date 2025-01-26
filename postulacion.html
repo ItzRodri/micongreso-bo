@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CNU SC Perla del Oriente</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import { PostulacionModule } from './script.js';
+        PostulacionModule.init();
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <nav>
+                <a href="index.html" @click="changePage('inscription')"
+                    :class="{ active: currentPage === 'inscription' }">Inscripción</a>
+                <a href="admin.html" @click="changePage('admin')"
+                    :class="{ active: currentPage === 'admin' }">Administradores</a>
+                <a href="postulacion.html" @click="changePage('speakers')"
+                    :class="{ active: currentPage === 'speakers' }">Postulación
+                    de Disertantes</a>
+                <a href="cronograma.html" @click="changePage('schedule')"
+                    :class="{ active: currentPage === 'schedule' }">Cronograma</a>
+                <a href="disertantes.html" @click="changePage('confirmed-speakers')"
+                    :class="{ active: currentPage === 'confirmed-speakers' }">Disertantes Confirmados</a>
+            </nav>
+        </header>
+        <main class="container">
+            <div>
+                <h1>Convocatoria Abierta para el Tour Universidades y Congreso Nacional de Universidades "Santa Cruz,
+                    Paraíso del Oriente"</h1>
+                <div class="card">
+                    <h2>Detalles del Evento</h2>
+                    <p><strong>Fechas:</strong> 10, 11 y 12 de abril de 2025</p>
+                    <p><strong>Lugar:</strong> Universidad Autónoma Juan Misael Saracho (UAJMS)</p>
+                    <p><strong>Objetivo:</strong> Fomentar el intercambio de conocimientos y experiencias en diversas
+                        áreas académicas.</p>
+                </div>
+                <div class="card">
+                    <h2>Modalidades de Participación</h2>
+                    <ul>
+                        <li>Disertaciones</li>
+                        <li>Talleres</li>
+                        <li>Actividades especiales</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2>Procedimiento de Inscripción y Selección</h2>
+                    <p><strong>Fecha límite:</strong> 28 de febrero de 2025</p>
+                    <p><strong>Formato de presentación:</strong> Resumen de la propuesta (máximo 500 palabras) Subir su
+                        Documento en formato PDF</p>
+                    <p><strong>Evaluación:</strong> Por comité académico</p>
+                    <p><strong>Comunicación de resultados:</strong> Del 12 de febrero al 25 de febrero</p>
+                </div>
+                <div class="card">
+                    <h2>Beneficios para los Participantes</h2>
+                    <ul>
+                        <li>Certificado de participación</li>
+                        <li>Reconocimiento académico</li>
+                        <li>Oportunidad de publicación en Foros Universitarios</li>
+                    </ul>
+                </div>
+                <form @submit.prevent="submitProposal">
+                    <h2>Formulario de Postulación</h2>
+                    <input v-model="name" type="text" placeholder="Nombre completo" required>
+                    <input v-model="email" type="email" placeholder="Correo electrónico" required>
+                    <select v-model="university" required>
+                        <option value="">Selecciona tu universidad</option>
+                        <option v-for="uni in universities" :value="uni">{{ uni }}</option>
+                    </select>
+                    <input v-model="proposalTitle" type="text" placeholder="Título de la propuesta" required>
+                    <textarea v-model="proposalDescription"
+                        placeholder="Descripción de la propuesta (máximo 500 palabras)" required
+                        maxlength="500"></textarea>
+                    <input type="file" @change="handleCVUpload" accept=".pdf" placeholder="Adjuntar CV (opcional)">
+                    <button type="submit">Enviar Propuesta</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

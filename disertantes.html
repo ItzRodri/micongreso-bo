@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CNU SC Perla del Oriente</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import { DisertantesModule } from './script.js';
+        DisertantesModule.init();
+    </script>
+</head>
+
+
+<body>
+    <div id="app">
+        <header>
+            <nav>
+                <a href="index.html" @click="changePage('inscription')"
+                    :class="{ active: currentPage === 'inscription' }">Inscripción</a>
+                <a href="admin.html" @click="changePage('admin')"
+                    :class="{ active: currentPage === 'admin' }">Administradores</a>
+                <a href="postulacion.html" @click="changePage('speakers')"
+                    :class="{ active: currentPage === 'speakers' }">Postulación
+                    de Disertantes</a>
+                <a href="cronograma.html" @click="changePage('schedule')"
+                    :class="{ active: currentPage === 'schedule' }">Cronograma</a>
+                <a href="disertantes.html" @click="changePage('confirmed-speakers')"
+                    :class="{ active: currentPage === 'confirmed-speakers' }">Disertantes Confirmados</a>
+            </nav>
+        </header>
+        <main class="container">
+            <div>
+                <h1>Disertantes Confirmados</h1>
+                <div class="grid">
+                    <div v-for="speaker in speakers" :key="speaker.id" class="card">
+                        <img :src="speaker.image" :alt="speaker.name" width="100" height="100">
+                        <h3>{{ speaker.name }}</h3>
+                        <p><strong>Universidad:</strong> {{ speaker.university }}</p>
+                        <p><strong>Tema:</strong> {{ speaker.topic }}</p>
+                        <button @click="showBio(speaker)">Ver Biografía</button>
+                    </div>
+                </div>
+                <div v-if="selectedSpeaker" class="modal" @click="selectedSpeaker = null">
+                    <div class="modal-content" @click.stop>
+                        <span class="close" @click="selectedSpeaker = null">&times;</span>
+                        <h2>{{ selectedSpeaker.name }}</h2>
+                        <p><strong>Universidad:</strong> {{ selectedSpeaker.university }}</p>
+                        <p><strong>Tema:</strong> {{ selectedSpeaker.topic }}</p>
+                        <p>{{ selectedSpeaker.bio }}</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
